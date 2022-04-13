@@ -6,7 +6,7 @@
 
 对于管理计算资源来说，管理存储资源明显是另一个问题。`PersistentVolume` 子系统为用户和管理员提供了一个 API，该 API 将如何提供存储的细节抽象了出来。为此，我们引入两个新的 API 资源：`PersistentVolume` 和 `PersistentVolumeClaim`。
 
-`PersistentVolume`（PV）是由管理员设置的存储，它是群集的一部分。就像节点是集群中的资源一样，PV 也是集群中的资源。 PV 是 Volume 之类的卷插件，但具有独立于使用 PV 的 Pod 的生命周期。此 API 对象包含存储实现的细节，即 NFS、iSCSI 或特定于云供应商的存储系统。
+`PersistentVolume`（PV）是由管理员设置的存储，它是群集的一部分。就像节点是集群中的资源一样，PV 也是集群中的资源。PV 持久卷和普通的 Volume 一样，也是使用卷插件来实现的，只是它们拥有独立于任何使用 PV 的 Pod 的生命周期。此 API 对象包含存储实现的细节，即 NFS、iSCSI 或特定于云供应商的存储系统。
 
 `PersistentVolumeClaim`（PVC）是用户存储的请求。它与 Pod 相似。Pod 消耗节点资源，PVC 消耗 PV 资源。Pod 可以请求特定级别的资源（CPU 和内存）。声明可以请求特定的大小和访问模式（例如，可以以读/写一次或 只读多次模式挂载）。
 
@@ -28,7 +28,7 @@ PV 属于集群中的资源。PVC 是对这些资源的请求，也作为对资�
 
 #### 动态
 
-根据  `StorageClasses`，当管理员创建的静态 PV 都不匹配用户的 `PersistentVolumeClaim` 时，集群可能会尝试动态地为 PVC 创建卷。
+根据 `StorageClasses`，当管理员创建的静态 PV 都不匹配用户的 `PersistentVolumeClaim` 时，集群可能会尝试动态地为 PVC 创建卷。
 
 ### 绑定
 
@@ -115,17 +115,17 @@ spec:
 
 Kubernetes 1.8 增加了对扩展持久化存储卷的 Alpha 支持。在 v1.9 中，以下持久化卷支持扩展持久化卷声明：
 
-- gcePersistentDisk
-- awsElasticBlockStore
-- Cinder
-- glusterfs
-- rbd
+* gcePersistentDisk
+* awsElasticBlockStore
+* Cinder
+* glusterfs
+* rbd
 
 管理员可以通过将 `ExpandPersistentVolumes` 特性门设置为true来允许扩展持久卷声明。管理员还应该启用[`PersistentVolumeClaimResize` 准入控制插件](https://kubernetes.io/docs/admin/admission-controllers/#persistentvolumeclaimresize)来执行对可调整大小的卷的其他验证。
 
 一旦 `PersistentVolumeClaimResize` 准入插件已打开，将只允许其 `allowVolumeExpansion` 字段设置为 true 的存储类进行大小调整。
 
-``` yaml
+```yaml
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
@@ -145,8 +145,8 @@ allowVolumeExpansion: true
 
 对于扩展包含文件系统的卷，只有在 ReadWrite 模式下使用 `PersistentVolumeClaim` 启动新的 Pod 时，才会执行文件系统调整大小。换句话说，如果正在扩展的卷在 pod 或部署中使用，则需要删除并重新创建要进行文件系统调整大小的pod。此外，文件系统调整大小仅适用于以下文件系统类型：
 
-- XFS
-- Ext3、Ext4
+* XFS
+* Ext3、Ext4
 
 **注意**：扩展 EBS 卷是一个耗时的操作。另外，每6个小时有一个修改卷的配额。
 
@@ -154,26 +154,26 @@ allowVolumeExpansion: true
 
 `PersistentVolume` 类型以插件形式实现。Kubernetes 目前支持以下插件类型：
 
-- GCEPersistentDisk
-- AWSElasticBlockStore
-- AzureFile
-- AzureDisk
-- FC (Fibre Channel)
-- FlexVolume
-- Flocker
-- NFS
-- iSCSI
-- RBD (Ceph Block Device)
-- CephFS
-- Cinder (OpenStack block storage)
-- Glusterfs
-- VsphereVolume
-- Quobyte Volumes
-- HostPath （仅限于但节点测试—— 不会以任何方式支持本地存储，也无法在多节点集群中工作）
-- VMware Photon
-- Portworx Volumes
-- ScaleIO Volumes
-- StorageOS
+* GCEPersistentDisk
+* AWSElasticBlockStore
+* AzureFile
+* AzureDisk
+* FC (Fibre Channel)
+* FlexVolume
+* Flocker
+* NFS
+* iSCSI
+* RBD (Ceph Block Device)
+* CephFS
+* Cinder (OpenStack block storage)
+* Glusterfs
+* VsphereVolume
+* Quobyte Volumes
+* HostPath （仅限于但节点测试—— 不会以任何方式支持本地存储，也无法在多节点集群中工作）
+* VMware Photon
+* Portworx Volumes
+* ScaleIO Volumes
+* StorageOS
 
 原始块支持仅适用于以上这些插件。
 
@@ -220,40 +220,40 @@ spec:
 
 存储模式包括：
 
-- ReadWriteOnce——该卷可以被单个节点以读/写模式挂载
-- ReadOnlyMany——该卷可以被多个节点以只读模式挂载
-- ReadWriteMany——该卷可以被多个节点以读/写模式挂载
+* ReadWriteOnce——该卷可以被单个节点以读/写模式挂载
+* ReadOnlyMany——该卷可以被多个节点以只读模式挂载
+* ReadWriteMany——该卷可以被多个节点以读/写模式挂载
 
 在命令行中，访问模式缩写为：
 
-- RWO - ReadWriteOnce
-- ROX - ReadOnlyMany
-- RWX - ReadWriteMany
+* RWO - ReadWriteOnce
+* ROX - ReadOnlyMany
+* RWX - ReadWriteMany
 
 > **重要**！一个卷一次只能使用一种访问模式挂载，即使它支持很多访问模式。例如，GCEPersistentDisk 可以由单个节点作为 ReadWriteOnce 模式挂载，或由多个节点以 ReadOnlyMany 模式挂载，但不能同时挂载。
 
 | Volume 插件            | ReadWriteOnce | ReadOnlyMany |  ReadWriteMany  |
-| :------------------- | :-----------: | :----------: | :-------------: |
-| AWSElasticBlockStore |   &#x2713;    |      -       |        -        |
-| AzureFile            |   &#x2713;    |   &#x2713;   |    &#x2713;     |
-| AzureDisk            |   &#x2713;    |      -       |        -        |
-| CephFS               |   &#x2713;    |   &#x2713;   |    &#x2713;     |
-| Cinder               |   &#x2713;    |      -       |        -        |
-| FC                   |   &#x2713;    |   &#x2713;   |        -        |
-| FlexVolume           |   &#x2713;    |   &#x2713;   |        -        |
-| Flocker              |   &#x2713;    |      -       |        -        |
-| GCEPersistentDisk    |   &#x2713;    |   &#x2713;   |        -        |
-| Glusterfs            |   &#x2713;    |   &#x2713;   |    &#x2713;     |
-| HostPath             |   &#x2713;    |      -       |        -        |
-| iSCSI                |   &#x2713;    |   &#x2713;   |        -        |
-| PhotonPersistentDisk |   &#x2713;    |      -       |        -        |
-| Quobyte              |   &#x2713;    |   &#x2713;   |    &#x2713;     |
-| NFS                  |   &#x2713;    |   &#x2713;   |    &#x2713;     |
-| RBD                  |   &#x2713;    |   &#x2713;   |        -        |
-| VsphereVolume        |   &#x2713;    |      -       | - （当 pod 并列时有效） |
-| PortworxVolume       |   &#x2713;    |      -       |    &#x2713;     |
-| ScaleIO              |   &#x2713;    |   &#x2713;   |        -        |
-| StorageOS            |   &#x2713;    |      -       |        -        |
+| -------------------- | :-----------: | :----------: | :-------------: |
+| AWSElasticBlockStore |       ✓       |       -      |        -        |
+| AzureFile            |       ✓       |       ✓      |        ✓        |
+| AzureDisk            |       ✓       |       -      |        -        |
+| CephFS               |       ✓       |       ✓      |        ✓        |
+| Cinder               |       ✓       |       -      |        -        |
+| FC                   |       ✓       |       ✓      |        -        |
+| FlexVolume           |       ✓       |       ✓      |        -        |
+| Flocker              |       ✓       |       -      |        -        |
+| GCEPersistentDisk    |       ✓       |       ✓      |        -        |
+| Glusterfs            |       ✓       |       ✓      |        ✓        |
+| HostPath             |       ✓       |       -      |        -        |
+| iSCSI                |       ✓       |       ✓      |        -        |
+| PhotonPersistentDisk |       ✓       |       -      |        -        |
+| Quobyte              |       ✓       |       ✓      |        ✓        |
+| NFS                  |       ✓       |       ✓      |        ✓        |
+| RBD                  |       ✓       |       ✓      |        -        |
+| VsphereVolume        |       ✓       |       -      | - （当 pod 并列时有效） |
+| PortworxVolume       |       ✓       |       -      |        ✓        |
+| ScaleIO              |       ✓       |       ✓      |        -        |
+| StorageOS            |       ✓       |       -      |        -        |
 
 ### 类
 
@@ -265,9 +265,9 @@ PV 可以具有一个类，通过将 `storageClassName` 属性设置为 [Storage
 
 当前的回收策略包括：
 
-- Retain（保留）——手动回收
-- Recycle（回收）——基本擦除（`rm -rf /thevolume/*`）
-- Delete（删除）——关联的存储资产（例如 AWS EBS、GCE PD、Azure Disk 和 OpenStack Cinder 卷）将被删除
+* Retain（保留）——手动回收
+* Recycle（回收）——基本擦除（`rm -rf /thevolume/*`）
+* Delete（删除）——关联的存储资产（例如 AWS EBS、GCE PD、Azure Disk 和 OpenStack Cinder 卷）将被删除
 
 当前，只有 NFS 和 HostPath 支持回收策略。AWS EBS、GCE PD、Azure Disk 和 Cinder 卷支持删除策略。
 
@@ -277,22 +277,21 @@ Kubernetes 管理员可以指定在节点上为挂载持久卷指定挂载选项
 
 **注意**：不是所有的持久化卷类型都支持挂载选项。
 
-
 以下卷类型支持挂载选项：
 
-- GCEPersistentDisk
-- AWSElasticBlockStore
-- AzureFile
-- AzureDisk
-- NFS
-- iSCSI
-- RBD （Ceph Block Device）
-- CephFS
-- Cinder （OpenStack 卷存储）
-- Glusterfs
-- VsphereVolume
-- Quobyte Volumes
-- VMware Photon
+* GCEPersistentDisk
+* AWSElasticBlockStore
+* AzureFile
+* AzureDisk
+* NFS
+* iSCSI
+* RBD （Ceph Block Device）
+* CephFS
+* Cinder （OpenStack 卷存储）
+* Glusterfs
+* VsphereVolume
+* Quobyte Volumes
+* VMware Photon
 
 挂载选项没有校验，如果挂载选项无效则挂载失败。
 
@@ -302,10 +301,10 @@ Kubernetes 管理员可以指定在节点上为挂载持久卷指定挂载选项
 
 卷可以处于以下的某种状态：
 
-- Available（可用）——一块空闲资源还没有被任何声明绑定
-- Bound（已绑定）——卷已经被声明绑定
-- Released（已释放）——声明被删除，但是资源还未被集群重新声明
-- Failed（失败）——该卷的自动回收失败
+* Available（可用）——一块空闲资源还没有被任何声明绑定
+* Bound（已绑定）——卷已经被声明绑定
+* Released（已释放）——声明被删除，但是资源还未被集群重新声明
+* Failed（失败）——该卷的自动回收失败
 
 命令行会显示绑定到 PV 的 PVC 的名称。
 
@@ -349,8 +348,8 @@ spec:
 
 声明可以指定一个[标签选择器](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors)来进一步过滤该组卷。只有标签与选择器匹配的卷可以绑定到声明。选择器由两个字段组成：
 
-- matchLabels：volume 必须有具有该值的标签
-- matchExpressions：这是一个要求列表，通过指定关键字，值列表以及与关键字和值相关的运算符组成。有效的运算符包括 In、NotIn、Exists 和 DoesNotExist。
+* matchLabels：volume 必须有具有该值的标签
+* matchExpressions：这是一个要求列表，通过指定关键字，值列表以及与关键字和值相关的运算符组成。有效的运算符包括 In、NotIn、Exists 和 DoesNotExist。
 
 所有来自 `matchLabels` 和 `matchExpressions` 的要求都被“与”在一起——它们必须全部满足才能匹配。
 
@@ -360,8 +359,8 @@ spec:
 
 PVC 不一定要请求类。其 `storageClassName` 设置为 `""` 的 PVC 始终被解释为没有请求类的 PV，因此只能绑定到没有类的 PV（没有注解或 `""`）。没有 `storageClassName` 的 PVC 根据是否打开[`DefaultStorageClass` 准入控制插件](https://kubernetes.io/docs/admin/admission-controllers/#defaultstorageclass)，集群对其进行不同处理。
 
-- 如果打开了准入控制插件，管理员可以指定一个默认的 `StorageClass`。所有没有 `StorageClassName` 的 PVC 将被绑定到该默认的 PV。通过在 `StorageClass` 对象中将注解 `storageclass.kubernetes.io/is-default-class` 设置为 “true” 来指定默认的 `StorageClass`。如果管理员没有指定缺省值，那么集群会响应 PVC 创建，就好像关闭了准入控制插件一样。如果指定了多个默认值，则准入控制插件将禁止所有 PVC 创建。
-- 如果准入控制插件被关闭，则没有默认 `StorageClass` 的概念。所有没有 `storageClassName` 的 PVC 只能绑定到没有类的 PV。在这种情况下，没有 `storageClassName` 的 PVC 的处理方式与 `storageClassName` 设置为 `""` 的 PVC 的处理方式相同。
+* 如果打开了准入控制插件，管理员可以指定一个默认的 `StorageClass`。所有没有 `StorageClassName` 的 PVC 将被绑定到该默认的 PV。通过在 `StorageClass` 对象中将注解 `storageclass.kubernetes.io/is-default-class` 设置为 “true” 来指定默认的 `StorageClass`。如果管理员没有指定缺省值，那么集群会响应 PVC 创建，就好像关闭了准入控制插件一样。如果指定了多个默认值，则准入控制插件将禁止所有 PVC 创建。
+* 如果准入控制插件被关闭，则没有默认 `StorageClass` 的概念。所有没有 `storageClassName` 的 PVC 只能绑定到没有类的 PV。在这种情况下，没有 `storageClassName` 的 PVC 的处理方式与 `storageClassName` 设置为 `""` 的 PVC 的处理方式相同。
 
 根据安装方法的不同，默认的 `StorageClass` 可以在安装过程中通过插件管理器部署到 Kubernetes 集群。
 
@@ -420,6 +419,7 @@ spec:
     lun: 0
     readOnly: false
 ```
+
 ### 持久化卷声明请求原始块卷
 
 ```yaml
@@ -435,6 +435,7 @@ spec:
     requests:
       storage: 10Gi
 ```
+
 ### 在 Pod 规格配置中为容器添加原始块设备
 
 ```yaml
@@ -465,17 +466,17 @@ spec:
 
 下面是用户和管理员指定请求原始块设备的可能组合的表格。该表指示卷是否将被绑定或未给定组合。静态设置的卷的卷绑定矩阵：
 
-| PV volumeMode | PVC volumeMode |   结果 |
-| ------------- | :------------: | ---: |
-| unspecified   |  unspecified   |   绑定 |
-| unspecified   |     Block      |  不绑定 |
-| unspecified   |   Filesystem   |   绑定 |
-| Block         |  unspecified   |  不绑定 |
-| Block         |     Block      |   绑定 |
-| Block         |   Filesystem   |  不绑定 |
-| Filesystem    |   Filesystem   |   绑定 |
-| Filesystem    |     Block      |  不绑定 |
-| Filesystem    |  unspecified   |   绑定 |
+| PV volumeMode | PVC volumeMode |  结果 |
+| ------------- | :------------: | --: |
+| unspecified   |   unspecified  |  绑定 |
+| unspecified   |      Block     | 不绑定 |
+| unspecified   |   Filesystem   |  绑定 |
+| Block         |   unspecified  | 不绑定 |
+| Block         |      Block     |  绑定 |
+| Block         |   Filesystem   | 不绑定 |
+| Filesystem    |   Filesystem   |  绑定 |
+| Filesystem    |      Block     | 不绑定 |
+| Filesystem    |   unspecified  |  绑定 |
 
 **注意**：alpha 版本只支持静态配置卷。使用原始块设备时，管理员应该注意考虑这些值。
 
@@ -483,13 +484,13 @@ spec:
 
 如果您正在编写在多种集群上运行并需要持久存储的配置模板或示例，我们建议您使用以下模式：
 
-- 要在您的在配置组合中包含 `PersistentVolumeClaim` 对象（与 Deployment、ConfigMap等一起）。
-- 不要在配置中包含 `PersistentVolume` 对象，因为用户实例化配置可能没有创建 `PersistentVolume` 的权限。
-- 给用户在实例化模板时提供存储类名称的选项。
-  - 如果用户提供存储类名称，则将该值放入 `persistentVolumeClaim.storageClassName` 字段中。如果集群具有由管理员启用的 StorageClass，这将导致 PVC 匹配正确的存储类别。
-  - 如果用户未提供存储类名称，则将 `persistentVolumeClaim.storageClassName` 字段保留为 nil。
-    - 这将导致使用集群中默认的 StorageClass 为用户自动配置 PV。许多集群环境都有默认的 StorageClass，或者管理员可以创建自己的默认 StorageClass。
-- 在您的工具中，请注意一段时间之后仍未绑定的 PVC，并向用户展示它们，因为这表示集群可能没有动态存储支持（在这种情况下用户应创建匹配的 PV），或集群没有存储系统（在这种情况下用户不能部署需要 PVC 的配置）。
+* 要在您的在配置组合中包含 `PersistentVolumeClaim` 对象（与 Deployment、ConfigMap等一起）。
+* 不要在配置中包含 `PersistentVolume` 对象，因为用户实例化配置可能没有创建 `PersistentVolume` 的权限。
+* 给用户在实例化模板时提供存储类名称的选项。
+  * 如果用户提供存储类名称，则将该值放入 `persistentVolumeClaim.storageClassName` 字段中。如果集群具有由管理员启用的 StorageClass，这将导致 PVC 匹配正确的存储类别。
+  * 如果用户未提供存储类名称，则将 `persistentVolumeClaim.storageClassName` 字段保留为 nil。
+    * 这将导致使用集群中默认的 StorageClass 为用户自动配置 PV。许多集群环境都有默认的 StorageClass，或者管理员可以创建自己的默认 StorageClass。
+* 在您的工具中，请注意一段时间之后仍未绑定的 PVC，并向用户展示它们，因为这表示集群可能没有动态存储支持（在这种情况下用户应创建匹配的 PV），或集群没有存储系统（在这种情况下用户不能部署需要 PVC 的配置）。
 
 原文地址：https://kubernetes.io/docs/concepts/storage/persistent-volumes/
 
