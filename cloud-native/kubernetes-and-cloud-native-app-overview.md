@@ -18,9 +18,9 @@
 
 云计算包含的内容十分繁杂，也有很多技术和公司牵强附会说自己是云计算公司，说自己是做云的，实际上可能风马牛不相及。说白了，云计算就是一种配置资源的方式，根据资源配置方式的不同我们可以把云计算从宏观上分为以下三种类型：
 
-* IaaS：这是为了想要建立自己的商业模式并进行自定义的客户，例如亚马逊的 EC2、S3 存储、Rackspace 虚拟机等都是 IaaS。
-* PaaS：工具和服务的集合，对于想用它来构建自己的应用程序或者想快速得将应用程序部署到生产环境而不必关心底层硬件的用户和开发者来说是特别有用的，比如 Cloud Foundry、Google App Engine、Heroku 等。
-* SaaS：终端用户可以直接使用的应用程序。这个就太多，我们生活中用到的很多软件都是 SaaS 服务，只要基于互联网来提供的服务基本都是 SaaS 服务，有的服务是免费的，比如 Google Docs，还有更多的是根据我们购买的 Plan 和使用量付费，比如 GitHub、各种云存储。
+* IaaS（基础架构即服务）：IaaS把计算基础(服务器、网络技术、存储和数据中心空间)作为一项服务提供给客户，IaaS 是云服务的最底层，主要提供一些基础资源。例如云厂商提供的 ECS 云服务器、某些存储，亚马逊的 EC2、S3 存储、Rackspace 虚拟机等都是 IaaS。
+* PaaS（平台即服务）：PaaS是在IaaS的基础之上，解决了操作系统、数据库、运行时环境runtime、中间件、各种框架的搭建操作问题，有了PaaS，程序员只需要专心的开发自己的APP就行了。比如 Cloud Foundry、Google App Engine、Heroku 等。
+* SaaS（软件即服务）：终端用户可以直接使用的应用程序。我们生活中用到的很多软件都是 SaaS 服务，只要基于互联网来提供的服务基本都是 SaaS 服务，比如 我们日常使用的 网易云音乐、微信、Google Docs，还有更多的是根据我们订阅的服务和使用量付费，比如 GitHub、各种云存储。
 
 ### 微服务介绍
 
@@ -59,7 +59,7 @@
 
 ## Kubernetes 与云原生的关系
 
-Kuberentes 可以说是乘着 Docker 和微服务的东风，一经推出便迅速蹿红，它的很多设计思想都契合了微服务和云原生应用的设计法则，这其中最著名的就是开发了 [Heroku](https://www.heroku.com) PaaS 平台的工程师们总结的 [Twelve-factor App](https://12factor.net/) 了。
+Kuberentes 可以说是乘着 Docker 和微服务的东风，一经推出便迅速蹿红，它的很多设计思想都契合了微服务和云原生应用的设计法则，这其中最著名的就是开发了 [Heroku](https://www.heroku.com) PaaS 平台的工程师们总结的 [Twelve-factor App](https://12factor.net) 了。
 
 下面我将讲解 Kubernetes 设计时是如何按照了十二因素应用法则，并给出 Kubernetes 中的应用示例，并附上一句话简短的介绍。
 
@@ -77,57 +77,57 @@ Kuberentes 可以说是乘着 Docker 和微服务的东风，一经推出便迅�
 
 ![十二因素应用](../images/12-factor-app.png)
 
-**1. 基准代码 **
+\*\*1. 基准代码 \*\*
 
 每个代码仓库（repo）都生成 docker image 保存到镜像仓库中，并使用唯一的 ID 管理，在 Jenkins 中使用编译时的 ID。
 
-**2. 依赖 **
+\*\*2. 依赖 \*\*
 
 显式的声明代码中的依赖，使用软件包管理工具声明，比如 Go 中的 Glide。
 
-**3. 配置 **
+\*\*3. 配置 \*\*
 
 将配置与代码分离，应用部署到 Kubernetes 中可以使用容器的环境变量或 ConfigMap 挂载到容器中。
 
-**4. 后端服务 **
+\*\*4. 后端服务 \*\*
 
 把后端服务当作附加资源，实质上是计算存储分离和降低服务耦合，分解单体应用。
 
-**5. 构建、发布、运行 **
+\*\*5. 构建、发布、运行 \*\*
 
 严格分离构建和运行，每次修改代码生成新的镜像，重新发布，不能直接修改运行时的代码和配置。
 
-**6. 进程 **
+\*\*6. 进程 \*\*
 
 应用程序进程应该是无状态的，这意味着再次重启后还可以计算出原先的状态。
 
-**7. 端口绑定 **
+\*\*7. 端口绑定 \*\*
 
 在 Kubernetes 中每个 Pod 都有独立的 IP，每个运行在 Pod 中的应用不必关心端口是否重复，只需在 service 中指定端口，集群内的 service 通过配置互相发现。
 
-**8. 并发 **
+\*\*8. 并发 \*\*
 
 每个容器都是一个进程，通过增加容器的副本数实现并发。
 
-**9. 易处理 **
+\*\*9. 易处理 \*\*
 
 快速启动和优雅终止可最大化健壮性，Kuberentes 优秀的 [Pod 生存周期控制](https://jimmysong.io/posts/pod-lifecycle/)。
 
-**10. 开发环境与线上环境等价 **
+\*\*10. 开发环境与线上环境等价 \*\*
 
 在 Kubernetes 中可以创建多个 namespace，使用相同的镜像可以很方便的复制一套环境出来，镜像的使用可以很方便的部署一个后端服务。
 
-**11. 日志 **
+\*\*11. 日志 \*\*
 
 把日志当作事件流，使用 stdout 输出并收集汇聚起来，例如到 ES 中统一查看。
 
-**12. 管理进程 **
+\*\*12. 管理进程 \*\*
 
 后台管理任务当作一次性进程运行，`kubectl exec` 进入容器内部操作。
 
 另外，[Cloud Native Go](https://jimmysong.io/cloud-native-go) 这本书的作者，CapitalOne 公司的 Kevin Hoffman 在 TalkingData T11 峰会上的 [High Level Cloud Native](https://jimmysong.io/blog/high-level-cloud-native-from-kevin-hoffman/) 的演讲中讲述了云原生应用的 15 个因素，在原先的 12 因素应用的基础上又增加了如下三个因素：
 
-**API 优先 **
+\*\*API 优先 \*\*
 
 * 服务间的合约
 * 团队协作的规约
@@ -163,12 +163,12 @@ Kubernetes 通过声明式配置，真正让开发人员能够理解应用的状
 
 Kubernetes 提供了多种资源对象，用户可以根据自己应用的特性加以选择。这些对象有：
 
-| 类别 | 名称 |
-| :--- | --- |
+| 类别   | 名称                                                                                                        |
+| ---- | --------------------------------------------------------------------------------------------------------- |
 | 资源对象 | Pod、ReplicaSet、ReplicationController、Deployment、StatefulSet、DaemonSet、Job、CronJob、HorizontalPodAutoscaler |
-| 配置对象 | Node、Namespace、Service、Secret、ConfigMap、Ingress、Label、CustomResourceDefinition、   ServiceAccount |
-| 存储对象 | Volume、Persistent Volume |
-| 策略对象 | SecurityContext、ResourceQuota、LimitRange |
+| 配置对象 | Node、Namespace、Service、Secret、ConfigMap、Ingress、Label、CustomResourceDefinition、 ServiceAccount            |
+| 存储对象 | Volume、Persistent Volume                                                                                  |
+| 策略对象 | SecurityContext、ResourceQuota、LimitRange                                                                  |
 
 在 Kubernetes 系统中，_Kubernetes 对象_ 是持久化的条目。Kubernetes 使用这些条目去表示整个集群的状态。特别地，它们描述了如下信息：
 
@@ -176,7 +176,7 @@ Kubernetes 提供了多种资源对象，用户可以根据自己应用的特性
 * 可以被应用使用的资源
 * 关于应用如何表现的策略，比如重启策略、升级策略，以及容错策略
 
-Kubernetes 对象是 “目标性记录” —— 一旦创建对象，Kubernetes 系统将持续工作以确保对象存在。通过创建对象，可以有效地告知 Kubernetes 系统，所需要的集群工作负载看起来是什么样子的，这就是 Kubernetes 集群的 ** 期望状态 **。
+Kubernetes 对象是 “目标性记录” —— 一旦创建对象，Kubernetes 系统将持续工作以确保对象存在。通过创建对象，可以有效地告知 Kubernetes 系统，所需要的集群工作负载看起来是什么样子的，这就是 Kubernetes 集群的 \*\* 期望状态 \*\*。
 
 详见 [Kubernetes Handbook - Objects](https://jimmysong.io/kubernetes-handbook/concepts/objects.html)。
 
@@ -205,10 +205,10 @@ Kubernetes 对象是 “目标性记录” —— 一旦创建对象，Kubernete
 * Docker 1.12.5（使用 yum 安装）
 * Etcd 3.1.5
 * Flanneld 0.7 vxlan 网络
-* TLS 认证通信 \(所有组件，如 etcd、kubernetes master 和 node\)
+* TLS 认证通信 (所有组件，如 etcd、kubernetes master 和 node)
 * RBAC 授权
 * kubelet TLS BootStrapping
-* kubedns、dashboard、heapster\(influxdb、grafana\)、EFK\(elasticsearch、fluentd、kibana\) 集群插件
+* kubedns、dashboard、heapster(influxdb、grafana)、EFK(elasticsearch、fluentd、kibana) 集群插件
 * 私有 Docker 镜像仓库 [Harbor](https://github.com/goharbor/harbor)（请自行部署，Harbor 提供离线安装包，直接使用 docker-compose 启动即可）
 
 **步骤介绍**
@@ -264,7 +264,7 @@ Kubernetes 在设计之初就充分考虑了针对容器的服务发现与负载
 
 Kubernetes 是一个多租户的云平台，因此必须对用户的权限加以限制，对用户空间进行隔离。Kubernetes 中的隔离主要包括这几种：
 
-* 网络隔离：需要使用网络插件，比如 [flannel](https://coreos.com/flannel/), [calico](https://www.projectcalico.org/)。
+* 网络隔离：需要使用网络插件，比如 [flannel](https://coreos.com/flannel/), [calico](https://www.projectcalico.org)。
 * 资源隔离：kubernetes 原生支持资源隔离，pod 就是资源隔离和调度的最小单位，同时使用 [namespace](https://jimmysong.io/kubernetes-handbook/concepts/namespace.html) 限制用户空间和资源限额。
 * 身份隔离：使用 [RBAC - 基于角色的访问控制](https://jimmysong.io/kubernetes-handbook/guide/rbac.html)，多租户的身份认证和权限控制。
 
@@ -286,7 +286,7 @@ Kubernetes 是一个多租户的云平台，因此必须对用户的权限加以
 * [k8s-app-monitor-test](https://github.com/rootsongjc/k8s-app-monitor-test)：生成模拟的监控数据，发送 http 请求，获取 json 返回值
 * [K8s-app-monitor-agent](https://github.com/rootsongjc/k8s-app-monitor-agent)：获取监控数据并绘图，访问浏览器获取图表
 
-**定义 API 生成 API文档 **
+\*\*定义 API 生成 API文档 \*\*
 
 使用 `API blueprint` 格式，定义 API 文档，格式类似于 markdown，再使用 [aglio](https://github.com/danielgtaylor/aglio) 生成 HTML 文档。
 
@@ -296,9 +296,9 @@ Kubernetes 是一个多租户的云平台，因此必须对用户的权限加以
 
 ## 如何迁移到云原生应用架构
 
-Pivotal（后被 VMware 收购）是云原生应用的提出者，并推出了 Pivotal Cloud Foundry 云原生应用平台和 [Spring](https://spring.io/) 开源 Java 开发框架，成为云原生应用架构中先驱者和探路者。
+Pivotal（后被 VMware 收购）是云原生应用的提出者，并推出了 Pivotal Cloud Foundry 云原生应用平台和 [Spring](https://spring.io) 开源 Java 开发框架，成为云原生应用架构中先驱者和探路者。
 
-原书作于 2015 年，其中的示例主要针对 Java 应用，实际上也适用于任何应用类型，云原生应用架构适用于异构语言的程序开发，不仅仅是针对 Java 语言的程序开发。截止到本人翻译本书时，云原生应用生态系统已经初具规模，[CNCF](https://cncf.io/) 成员不断发展壮大，基于云原生的创业公司不断涌现，[Kubernetes](https://kubernetes.io/) 引领容器编排潮流，和 Service Mesh 技术（如 [Linkerd](https://linkerd.io/) 和 [Istio](https://istio.io/)） 的出现，Go 语言的兴起（参考另一本书 [Cloud Native Go](http://rootsongjc.github.io/cloud-native-go)）等为我们将应用迁移到云原生架构的提供了更多的方案选择。
+原书作于 2015 年，其中的示例主要针对 Java 应用，实际上也适用于任何应用类型，云原生应用架构适用于异构语言的程序开发，不仅仅是针对 Java 语言的程序开发。截止到本人翻译本书时，云原生应用生态系统已经初具规模，[CNCF](https://cncf.io) 成员不断发展壮大，基于云原生的创业公司不断涌现，[Kubernetes](https://kubernetes.io) 引领容器编排潮流，和 Service Mesh 技术（如 [Linkerd](https://linkerd.io) 和 [Istio](https://istio.io)） 的出现，Go 语言的兴起（参考另一本书 [Cloud Native Go](http://rootsongjc.github.io/cloud-native-go)）等为我们将应用迁移到云原生架构的提供了更多的方案选择。
 
 ### 迁移到云原生应用架构指南
 
@@ -323,12 +323,12 @@ Pivotal（后被 VMware 收购）是云原生应用的提出者，并推出了 P
 步骤说明：
 
 1. 将原有应用拆解为服务
-2.  定义服务的接口 / API 通信方式
-3.  编写启动脚本作为容器的进程入口
-4.  准备应用配置文件
-5.  容器化、制作镜像
-6.  准备 Kubernetes YAML 文件
-7.  如果有外置配置文件需要创建 ConfigMap 或 Secret 存储
+2. 定义服务的接口 / API 通信方式
+3. 编写启动脚本作为容器的进程入口
+4. 准备应用配置文件
+5. 容器化、制作镜像
+6. 准备 Kubernetes YAML 文件
+7. 如果有外置配置文件需要创建 ConfigMap 或 Secret 存储
 
 详见：[迁移传统应用到 Kubernetes 步骤详解 —— 以 Hadoop YARN 为例](https://jimmysong.io/posts/migrating-hadoop-yarn-to-kubernetes/)。
 
@@ -338,7 +338,7 @@ Service Mesh 现在一般被翻译作服务网格，目前主流的 Service Mesh
 
 * [Istio](https://istio.io)：IBM、Google、Lyft 共同开源，详细文档见 [Istio 官方文档](https://istio.io)
 * [Linkerd](https://linkerd.io)：原 Twitter 工程师开发，现为 [CNCF](https://cncf.io) 中的项目之一
-* [Envoy](https://www.envoyproxy.io/)：Lyft 开源的，可以在 Istio 中使用 Sidecar 模式运行
+* [Envoy](https://www.envoyproxy.io)：Lyft 开源的，可以在 Istio 中使用 Sidecar 模式运行
 
 此外还有很多其它的 Service Mesh 鱼贯而出，请参考 [awesome-cloud-native](https://jimmysong.io/awesome-cloud-native)。
 
@@ -403,9 +403,9 @@ Spark 原生支持 Standalone、Mesos 和 YARN 资源调度，现已支持 Kuber
 
 使用 Kubernetes 原生调度的 Spark on Kubernetes 是对原先的 Spark on YARN 和 YARN on Docker 的改变是革命性的，主要表现在以下几点：
 
-1. **Kubernetes 原生调度 **：不再需要二层调度，直接使用 Kubernetes 的资源调度功能，跟其他应用共用整个 Kubernetes 管理的资源池；
+1. \*\*Kubernetes 原生调度 \*\*：不再需要二层调度，直接使用 Kubernetes 的资源调度功能，跟其他应用共用整个 Kubernetes 管理的资源池；
 2. **资源隔离，粒度更细**：原先 YARN 中的 queue 在 Spark on Kubernetes 中已不存在，取而代之的是 Kubernetes 中原生的 namespace，可以为每个用户分别指定一个 namespace，限制用户的资源 quota；
-3. **细粒度的资源分配 **：可以给每个 spark 任务指定资源限制，实际指定多少资源就使用多少资源，因为没有了像 YARN那样的二层调度（圈地式的），所以可以更高效和细粒度的使用资源；
+3. \*\*细粒度的资源分配 \*\*：可以给每个 spark 任务指定资源限制，实际指定多少资源就使用多少资源，因为没有了像 YARN那样的二层调度（圈地式的），所以可以更高效和细粒度的使用资源；
 4. **监控的变革**：因为做到了细粒度的资源分配，所以可以对用户提交的每一个任务做到资源使用的监控，从而判断用户的资源使用情况，所有的 metric 都记录在数据库中，甚至可以为每个用户的每次任务提交计量；
 5. **日志的变革**：用户不再通过 YARN 的 web 页面来查看任务状态，而是通过 pod 的 log 来查看，可将所有的 Kuberentes 中的应用的日志等同看待收集起来，然后可以根据标签查看对应应用的日志；
 

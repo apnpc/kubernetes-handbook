@@ -1,4 +1,4 @@
-# 用 kubeadm 在 Ubuntu 上快速构建 Kubernetes 测试集群
+# 使用 kubeadm 在 Ubuntu Server 16.04 上快速构建测试集群
 
 本文将介绍如何在 Ubuntu server 16.04 版本上安装 kubeadm，并利用 kubeadm 快速的在 Ubuntu server 版本 16.04 上构建一个 kubernetes 的基础的测试集群，用来做学习和测试用途，当前（2018-04-14）最新的版本是 1.10.1。参考文档包括 kubernetes 官方网站的 [kubeadm 安装文档](https://kubernetes.io/docs/setup/independent/install-kubeadm/)以及[利用 kubeadm 创建集群](https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/)这两个文档。
 
@@ -8,7 +8,7 @@
 
 本次安装建议至少 4 台服务器或者虚拟机，每台服务器 4G 内存，2 个 CPU 核心以上，基本架构为 1 台 master 节点，3 台 slave 节点。整个安装过程将在 Ubuntu 服务器上安装完 kubeadm，以及安装 kubernetes 的基本集群，包括 canal 网络，另后台存储可参考本书的最佳实践中的存储管理内容。 本次安装一共 4 个节点，节点信息如下:
 
-| 角色   | 主机名        | IP 地址       |
+| 角色     | 主机名           | IP 地址         |
 | ------ | ------------- | ------------- |
 | Master | Ubuntu-master | 192.168.5.200 |
 | Slave  | ubuntu-1      | 192.168.5.201 |
@@ -17,8 +17,8 @@
 
 ## 准备工作
 
-- 默认方式安装 Ubuntu Server 版本 16.04
-- 配置主机名映射，每个节点
+* 默认方式安装 Ubuntu Server 版本 16.04
+* 配置主机名映射，每个节点
 
 ```bash
 # cat /etc/hosts
@@ -29,25 +29,21 @@
 192.168.0.203   Ubuntu-3
 ```
 
-- 如果连接 gcr 网站不方便，无法下载镜像，会导致安装过程卡住，可以下载我导出的镜像包，
+*   如果连接 gcr 网站不方便，无法下载镜像，会导致安装过程卡住，可以下载我导出的镜像包，
 
-  我导出的镜像网盘链接
+    我导出的镜像网盘链接
 
-  ，解压缩以后是多个个 tar 包，使用
+    ，解压缩以后是多个个 tar 包，使用
 
-   
+    ```
+    docker load< xxxx.tar
+    ```
 
-  ```
-  docker load< xxxx.tar
-  ```
+    导入各个文件即可）。
 
-   
+    ### 在所有节点上安装 kubeadm
 
-  导入各个文件即可）。
-
-  ## 在所有节点上安装 kubeadm
-
-  查看 apt 安装源如下配置，使用阿里云的系统和 kubernetes 的源。
+    查看 apt 安装源如下配置，使用阿里云的系统和 kubernetes 的源。
 
 ```bash
 $ cat /etc/apt/sources.list
@@ -331,4 +327,4 @@ taint "node-role.kubernetes.io/master:" not found
 
 ## 参考
 
-- [Overview of kubeadm - kubernetest.io](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm/)
+* [Overview of kubeadm - kubernetest.io](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm/)

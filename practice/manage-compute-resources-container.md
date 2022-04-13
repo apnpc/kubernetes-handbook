@@ -4,31 +4,31 @@
 
 ## 资源类型
 
-*CPU* 和 *memory* 都是 *资源类型*。资源类型具有基本单位。CPU 的单位是 core，memory 的单位是 byte。
+_CPU_ 和 _memory_ 都是 _资源类型_。资源类型具有基本单位。CPU 的单位是 core，memory 的单位是 byte。
 
-CPU和内存统称为*计算资源*，也可以称为*资源*。计算资源的数量是可以被请求、分配和消耗的可测量的。它们与 [API 资源](https://kubernetes.io/docs/api/) 不同。 API 资源（如 Pod 和 [Service](https://kubernetes.io/docs/user-guide/services)）是可通过 Kubernetes API server 读取和修改的对象。
+CPU和内存统称为_计算资源_，也可以称为_资源_。计算资源的数量是可以被请求、分配和消耗的可测量的。它们与 [API 资源](https://kubernetes.io/docs/api/) 不同。 API 资源（如 Pod 和 [Service](https://kubernetes.io/docs/user-guide/services)）是可通过 Kubernetes API server 读取和修改的对象。
 
 ## Pod 和 容器的资源请求和限制
 
 Pod 中的每个容器都可以指定以下的一个或者多个值：
 
-- `spec.containers[].resources.limits.cpu`
-- `spec.containers[].resources.limits.memory`
-- `spec.containers[].resources.requests.cpu`
-- `spec.containers[].resources.requests.memory`
+* `spec.containers[].resources.limits.cpu`
+* `spec.containers[].resources.limits.memory`
+* `spec.containers[].resources.requests.cpu`
+* `spec.containers[].resources.requests.memory`
 
 尽管只能在个别容器上指定请求和限制，但是我们可以方便地计算出 Pod 资源请求和限制。特定资源类型的Pod 资源请求/限制是 Pod 中每个容器的该类型的资源请求/限制的总和。
 
 ## CPU 的含义
 
-CPU 资源的限制和请求以 *cpu* 为单位。
+CPU 资源的限制和请求以 _cpu_ 为单位。
 
 Kubernetes 中的一个 cpu 等于：
 
-- 1 AWS vCPU
-- 1 GCP Core
-- 1 Azure vCore
-- 1 *Hyperthread* 在带有超线程的裸机 Intel 处理器上
+* 1 AWS vCPU
+* 1 GCP Core
+* 1 Azure vCore
+* 1 _Hyperthread_ 在带有超线程的裸机 Intel 处理器上
 
 允许浮点数请求。具有 `spec.containers[].resources.requests.cpu` 为 0.5 的容器保证了一半 CPU 要求 1 CPU的一半。表达式 `0.1` 等价于表达式 `100m`，可以看作 “100 millicpu”。有些人说成是“一百毫 cpu”，其实说的是同样的事情。具有小数点（如 `0.1`）的请求由 API 转换为`100m`，精度不超过 `1m`。因此，可能会优先选择 `100m` 的形式。
 
@@ -44,7 +44,7 @@ CPU 总是要用绝对数量，不可以使用相对数量；0.1 的 CPU 在单�
 
 下面是个例子。
 
-以下 Pod 有两个容器。每个容器的请求为 0.25 cpu 和 64MiB（2<sup>26</sup> 字节）内存，每个容器的限制为 0.5 cpu 和 128MiB 内存。您可以说该 Pod 请求 0.5 cpu 和 128 MiB 的内存，限制为 1 cpu 和 256MiB 的内存。
+以下 Pod 有两个容器。每个容器的请求为 0.25 cpu 和 64MiB（226 字节）内存，每个容器的限制为 0.5 cpu 和 128MiB 内存。您可以说该 Pod 请求 0.5 cpu 和 128 MiB 的内存，限制为 1 cpu 和 256MiB 的内存。
 
 ```yaml
 apiVersion: v1
@@ -83,9 +83,9 @@ spec:
 
 当使用 Docker 时：
 
-- `spec.containers[].resources.requests.cpu` 的值将转换成 millicore 值，这是个浮点数，并乘以1024，这个数字中的较大者或2用作 `docker run` 命令中的[ `--cpu-shares`](https://docs.docker.com/engine/reference/run/#/cpu-share-constraint) 标志的值。
-- `spec.containers[].resources.limits.cpu` 被转换成 millicore 值。被乘以 100000 然后 除以 1000。这个数字用作 `docker run` 命令中的 [`--cpu-quota`](https://docs.docker.com/engine/reference/run/#/cpu-quota-constraint) 标志的值。[`--cpu-quota` ] 标志被设置成了 100000，表示测量配额使用的默认100ms 周期。如果 [`--cpu-cfs-quota`] 标志设置为 true，则 kubelet 会强制执行 cpu 限制。从 Kubernetes 1.2 版本起，此标志默认为 true。
-- `spec.containers[].resources.limits.memory` 被转换为整型，作为 `docker run` 命令中的 [`--memory`](https://docs.docker.com/engine/reference/run/#/user-memory-constraints) 标志的值。
+* `spec.containers[].resources.requests.cpu` 的值将转换成 millicore 值，这是个浮点数，并乘以1024，这个数字中的较大者或2用作 `docker run` 命令中的[ `--cpu-shares`](https://docs.docker.com/engine/reference/run/#/cpu-share-constraint) 标志的值。
+* `spec.containers[].resources.limits.cpu` 被转换成 millicore 值。被乘以 100000 然后 除以 1000。这个数字用作 `docker run` 命令中的 [`--cpu-quota`](https://docs.docker.com/engine/reference/run/#/cpu-quota-constraint) 标志的值。\[`--cpu-quota` ] 标志被设置成了 100000，表示测量配额使用的默认100ms 周期。如果 \[`--cpu-cfs-quota`] 标志设置为 true，则 kubelet 会强制执行 cpu 限制。从 Kubernetes 1.2 版本起，此标志默认为 true。
+* `spec.containers[].resources.limits.memory` 被转换为整型，作为 `docker run` 命令中的 [`--memory`](https://docs.docker.com/engine/reference/run/#/user-memory-constraints) 标志的值。
 
 如果容器超过其内存限制，则可能会被终止。如果可重新启动，则与所有其他类型的运行时故障一样，kubelet 将重新启动它。
 
@@ -208,7 +208,7 @@ Kubernetes 1.5 版本中引入不透明整型资源。不透明的整型资源�
 
 **注意：** 不透明整型资源在 kubernetes 1.5 中还是 Alpha 版本。只实现了资源计量，节点级别的隔离还处于积极的开发阶段。
 
-不透明整型资源是以 `pod.alpha.kubernetes.io/opaque-int-resource-` 为前缀的资源。API server 将限制这些资源的数量为整数。*有效* 数量的例子有 `3`、`3000m` 和 `3Ki`。*无效*数量的例子有 `0.5` 和 `1500m`。
+不透明整型资源是以 `pod.alpha.kubernetes.io/opaque-int-resource-` 为前缀的资源。API server 将限制这些资源的数量为整数。_有效_ 数量的例子有 `3`、`3000m` 和 `3Ki`。_无效_数量的例子有 `0.5` 和 `1500m`。
 
 申请使用不透明整型资源需要两步。首先，集群运维人员必须在一个或多个节点上通告每个节点不透明的资源。然后，用户必须在 Pod 中请求不透明资源。
 
@@ -233,7 +233,7 @@ Host: k8s-master:8080
 ]
 ```
 
-```bash{% raw %}
+```bash
 curl --header "Content-Type: application/json-patch+json" \
 --request PATCH \
 --data '[{"op": "add", "path": "/status/capacity/pod.alpha.kubernetes.io~1opaque-int-resource-foo", "value": "5"}]' \
